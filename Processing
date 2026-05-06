@@ -1,0 +1,74 @@
+import processing.serial.*;
+
+Serial myPort;
+
+String angle = "";
+String distance = "";
+String data = "";
+int iAngle, iDistance;
+int index1 = 0;
+
+void setup() {
+  size(800, 600);
+  myPort = new Serial(this, "COM3", 9600); // change COM if needed
+  myPort.bufferUntil('.');
+}
+
+void draw() {
+  background(0);
+  fill(0, 255, 0);
+
+  drawRadar();
+  drawLine();
+  drawObject();
+}
+
+void serialEvent(Serial myPort) {
+  data = myPort.readStringUntil('.');
+  data = data.substring(0, data.length()-1);
+
+  index1 = data.indexOf(",");
+  angle = data.substring(0, index1);
+  distance = data.substring(index1+1);
+
+  iAngle = int(angle);
+  iDistance = int(distance);
+}
+
+void drawRadar() {
+  pushMatrix();
+  translate(width/2, height-50);
+
+  noFill();
+  stroke(0,255,0);
+
+  arc(0,0,700,700,PI,TWO_PI);
+  arc(0,0,500,500,PI,TWO_PI);
+  arc(0,0,300,300,PI,TWO_PI);
+
+  popMatrix();
+}
+
+void drawLine() {
+  pushMatrix();
+  translate(width/2, height-50);
+  stroke(0,255,0);
+
+  float x = 350 * cos(radians(iAngle));
+  float y = -350 * sin(radians(iAngle));
+
+  line(0,0,x,y);
+  popMatrix();
+}
+
+void drawObject() {
+  pushMatrix();
+  translate(width/2, height-50);
+  stroke(255,0,0);
+
+  float x = iDistance * cos(radians(iAngle)) * 3;
+  float y = -iDistance * sin(radians(iAngle)) * 3;
+
+  point(x,y);
+  popMatrix();
+}
