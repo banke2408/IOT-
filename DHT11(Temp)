@@ -1,0 +1,30 @@
+#include <TM1637Display.h>
+#include <DHT.h>
+
+#define DHTPIN 9
+#define DHTTYPE DHT11
+
+#define CLK 10
+#define DIO 11
+
+DHT dht(DHTPIN, DHTTYPE);
+TM1637Display display(CLK, DIO);
+
+void setup() {
+  dht.begin();
+  display.setBrightness(7);
+}
+
+void loop() {
+
+  float temp = dht.readTemperature();
+
+  if (isnan(temp)) {
+    display.showNumberDec(0);
+    return;
+  }
+
+  display.showNumberDec((int)temp);
+
+  delay(2000);
+}
