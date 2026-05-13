@@ -1,0 +1,48 @@
+#include <TM1637Display.h>
+#include <DHT.h>
+
+#define DHTPIN 9
+#define DHTTYPE DHT11
+
+#define CLK 10
+#define DIO 11
+
+#define BUZZER 8   // Buzzer connected to digital pin 8
+
+DHT dht(DHTPIN, DHTTYPE);
+TM1637Display display(CLK, DIO);
+
+void setup() {
+  dht.begin();
+  display.setBrightness(7);
+
+  pinMode(BUZZER, OUTPUT);
+  digitalWrite(BUZZER, LOW);
+}
+
+void loop() {
+
+  float temp = dht.readTemperature();
+
+  if (isnan(temp)) {
+    display.showNumberDec(0);
+    digitalWrite(BUZZER, LOW);
+    delay(2000);
+    return;
+  }
+
+  display.showNumberDec((int)temp);
+
+  //  Temperature alert logic
+  if (temp > 30) {
+    digitalWrite(BUZZER, HIGH);  // ON buzzer
+    delay(500);
+    digitalWrite(BUZZER, LOW);   // OFF buzzer
+    delay(500);
+  } 
+  else {
+    digitalWrite(BUZZER, LOW);   // keep OFF
+  }
+
+  delay(2000);
+}
